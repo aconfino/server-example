@@ -51,7 +51,7 @@ public class FooClientTest  {
 			String assertion = map.get(randomKey);
 			File file = new File(folder + fileName);
 			assertTrue(file.exists());
-			File savedFile = new File(ServerConstants.serverSavedStuff + "/" + fileName);
+			File savedFile = new File(ServerConstants.servePushStuff + "/" + fileName);
 			String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
 			assertTrue(response.equals(assertion));
 			assertTrue(savedFile.exists());

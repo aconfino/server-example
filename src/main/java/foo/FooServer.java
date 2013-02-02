@@ -9,12 +9,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.apache.commons.io.FileUtils;
+
 public class FooServer {
 
 	static ServerSocket  serverSocket = null;
 	static boolean listening = true;
 	
-	public static void main(String args[]) throws UnknownHostException, IOException {	
+	public static void main(String args[]) throws UnknownHostException, IOException {
+    	setupTestData();
 		serverSocket = new ServerSocket(9000);
 		System.out.println("listening on 9000");
 		while (listening){
@@ -22,6 +25,19 @@ public class FooServer {
 		}
 	    serverSocket.close();
 	}
+	
+	public static void setupTestData() throws IOException{
+    	File pushFolder = new File(ServerConstants.servePushStuff);
+    	File pullFolder = new File(ServerConstants.serverPullStuff);
+    	if (!pushFolder.exists()){
+    		pushFolder.mkdirs();
+    	}
+    	if (!pullFolder.exists()){
+    		pullFolder.mkdirs();
+    		File testFiles = new File("src/test/resources/");
+    		FileUtils.copyDirectory(testFiles, pullFolder);
+    	}
+    }
 }
 
  class MultiServerThread extends Thread {
@@ -58,23 +74,15 @@ public class FooServer {
     }
     
     public File saveFile(DataInputStream inFromClient, File fileToSave, Integer length) throws IOException{
-    	createFolder();
-    	FileOutputStream fileOutputStream = new FileOutputStream(ServerConstants.serverSavedStuff + "/" + fileToSave);
+    	FileOutputStream fileOutputStream = new FileOutputStream(ServerConstants.servePushStuff + "/" + fileToSave);
     	byte [] fileData = new byte[length];  // get the length to read from the client
     	inFromClient.readFully(fileData);  // read the bytes into the array
     	fileOutputStream.write(fileData);  // write the bytes to the file
     	fileOutputStream.flush();
     	fileOutputStream.close();
-		File savedFile = new File(ServerConstants.serverSavedStuff + "/" + fileToSave);
+		File savedFile = new File(ServerConstants.servePushStuff + "/" + fileToSave);
 		System.out.println(savedFile.getAbsolutePath());
 		return savedFile;
-    }
-    
-    public void createFolder(){
-    	File subfolder = new File(ServerConstants.serverSavedStuff);
-    	if (!subfolder.exists()){
-    		subfolder.mkdirs();
-    	}
     }
     
     public void sendResponse(File file, DataOutputStream outToClient) throws IOException{
