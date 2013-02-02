@@ -5,7 +5,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -14,77 +21,41 @@ import org.junit.Test;
 public class FooClientTest  {
 	
 	String folder = "src/test/resources/";
+	int loopCount = 500;
+	Map<String, String> map = new HashMap<String, String>();
 	
-	@Test
-	public void pushFileTest() throws UnknownHostException, IOException{
-		File file = new File(folder + "005_5.JPG");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("005_5.JPG|413371"));
+	@Before
+	public void createMap(){
+		map.put("005_5.JPG", "005_5.JPG|413371");
+		map.put("100_2791.JPG", "100_2791.JPG|2458981");
+		map.put("Andrew 017.jpg", "Andrew 017.jpg|45785");
+		map.put("bass.jpg", "bass.jpg|75245");
+		map.put("CollegeDays.jpg", "CollegeDays.jpg|51253");
+		map.put("IMG_0148.JPG", "IMG_0148.JPG|882168");
+		map.put("photo(3).JPG", "photo(3).JPG|2240877");
+		map.put("SANY0362.JPG", "SANY0362.JPG|96745");
+		map.put("scotts run.JPG", "scotts run.JPG|232480");
+	}
+	
+	public String getRandomKey(){
+		List <String>keysAsArray = new ArrayList <String>(map.keySet());
+		Random r = new Random();
+		return keysAsArray.get(r.nextInt(keysAsArray.size()));
 	}
 	
 	@Test
-	public void pushFileTest2() throws UnknownHostException, IOException{
-		File file = new File(folder + "100_2791.JPG");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("100_2791.JPG|2458981"));
-	}
-	
-	@Test
-	public void pushFileTest3() throws UnknownHostException, IOException{
-		File file = new File(folder + "Andrew 017.jpg");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("Andrew 017.jpg|45785"));
-	}
-	
-	@Test
-	public void pushFileTest4() throws UnknownHostException, IOException{
-		File file = new File(folder + "bass.jpg");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("bass.jpg|75245"));
-	}
-	
-	@Test
-	public void pushFileTest5() throws UnknownHostException, IOException{
-		File file = new File(folder + "CollegeDays.jpg");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("CollegeDays.jpg|51253"));
-	}
-	
-	@Test
-	public void pushFileTest6() throws UnknownHostException, IOException{
-		File file = new File(folder + "IMG_0148.JPG");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("IMG_0148.JPG|882168"));
-	}
-	
-	@Test
-	public void pushFileTest7() throws UnknownHostException, IOException{
-		File file = new File(folder + "photo(3).JPG");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("photo(3).JPG|2240877"));
-	}
-	
-	@Test
-	public void pushFileTest8() throws UnknownHostException, IOException{
-		File file = new File(folder + "SANY0362.JPG");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("SANY0362.JPG|96745"));
-	}
-	
-	@Test
-	public void pushFileTest9() throws UnknownHostException, IOException{
-		File file = new File(folder + "scotts run.JPG");
-		assertTrue(file.exists());
-		String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
-		assertTrue(response.equals("scotts run.JPG|232480"));
+	public void pushRandomFileTest() throws UnknownHostException, IOException{
+		for (int i = 0; i < loopCount; i++){
+			String randomKey = getRandomKey();
+			String fileName = randomKey;
+			String assertion = map.get(randomKey);
+			File file = new File(folder + fileName);
+			assertTrue(file.exists());
+			File savedFile = new File(ServerConstants.serverSavedStuff + "/" + fileName);
+			String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
+			assertTrue(response.equals(assertion));
+			assertTrue(savedFile.exists());
+		}
 	}
 
 }
