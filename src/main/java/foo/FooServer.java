@@ -3,11 +3,12 @@ package foo;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 
@@ -23,8 +24,9 @@ public class FooServer {
     	setupTestData();
 		serverSocket = new ServerSocket(9000);
 		System.out.println("listening on 9000");
+	    ExecutorService executor = Executors.newFixedThreadPool(10);
 		while (listening){
-	        new MultiServerThread(serverSocket.accept()).start();
+			executor.execute(new MultiServerThread(serverSocket.accept()));
 		}
 	    serverSocket.close();
 	}
