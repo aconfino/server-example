@@ -52,7 +52,6 @@ public class FooServer {
  
     public void run() {
     	try {
-    		System.out.println("accepting connection from client:  " + socket.getRemoteSocketAddress());
 			DataInputStream inFromClient = new DataInputStream(socket.getInputStream());
 	    	DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
 	    	String command = inFromClient.readUTF();// read request
@@ -71,6 +70,7 @@ public class FooServer {
 		File savedFile = saveRemoteFile(command, inFromClient);
 		String response = savedFile.getName() + "|" + new Long(savedFile.length()).toString();
     	outToClient.writeUTF(response);  // send the response
+    	System.out.println(Thread.currentThread().getId() + " pushed " + savedFile.getName());
     }
     
     public void pullFileCmd(String command, DataInputStream inFromClient, DataOutputStream outToClient) throws IOException{
@@ -83,7 +83,7 @@ public class FooServer {
     		outToClient.writeUTF(fileName + "|" + fileData.length);
     		outToClient.write(fileData);
     		outToClient.flush();
-    		System.out.println("pulled " + file.getName());
+    		System.out.println(Thread.currentThread().getId() + " pulled " + file.getName());
     }
     
     public File saveRemoteFile(String command, DataInputStream inFromClient) throws IOException{

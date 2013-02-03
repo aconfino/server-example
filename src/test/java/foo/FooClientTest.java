@@ -59,7 +59,7 @@ public class FooClientTest  {
 	}
 	
 	@Test
-	public void pullFileTest() throws UnknownHostException, IOException{
+	public void pullRandomFileTest() throws UnknownHostException, IOException{
 		for (int i = 0; i < loopCount; i++){
 			String randomKey = getRandomKey();
 			String fileName = randomKey;

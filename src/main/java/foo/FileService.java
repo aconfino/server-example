@@ -14,7 +14,6 @@ public class FileService {
     	fileOutputStream.write(fileData);  // write the bytes to the file
     	fileOutputStream.flush();
     	fileOutputStream.close();
-		System.out.println(fileToSave.getAbsolutePath());
 		return fileToSave;
     }
 

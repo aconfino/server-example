@@ -18,9 +18,11 @@ public class FooClient {
 		String response = "";
 		if (arg.startsWith(ServerConstants.pushFileCmd)){
 			response = pushFile(arg, inFromServer, outToServer);
+			System.out.println(Thread.currentThread().getId() + " performed a push");
 		} else if (arg.startsWith(ServerConstants.pullFileCmd)){
 			File savedFile = pullFile(arg, inFromServer, outToServer);
 			response = savedFile.getName() + "|" + savedFile.length();
+			System.out.println(Thread.currentThread().getId() + " performed a pull");
 		}
 		close(socket);
 		return response;
