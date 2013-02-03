@@ -39,9 +39,9 @@ public class FooServer {
     	}
     	if (!pullFolder.exists()){
     		pullFolder.mkdirs();
-    		File testFiles = new File("src/test/resources/");
-    		FileUtils.copyDirectory(testFiles, pullFolder);
     	}
+    	File testFiles = new File("src/test/resources/");
+    	FileUtils.copyDirectory(testFiles, pullFolder);
     }
 }
 

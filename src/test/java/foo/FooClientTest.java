@@ -35,6 +35,9 @@ public class FooClientTest  {
 		map.put("photo(3).JPG", "photo(3).JPG|2240877");
 		map.put("SANY0362.JPG", "SANY0362.JPG|96745");
 		map.put("scotts run.JPG", "scotts run.JPG|232480");
+		map.put("marsh_creek.pdf", "marsh_creek.pdf|353600");
+		map.put("test.txt", "test.txt|24");
+		map.put("IMG_0004.mp4", "IMG_0004.mp4|9708083");
 	}
 	
 	public String getRandomKey(){
