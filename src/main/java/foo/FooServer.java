@@ -11,6 +11,9 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.io.FileUtils;
 
+import foo.FileService;
+import foo.ServerConstants;
+
 public class FooServer {
 
 	static ServerSocket  serverSocket = null;
@@ -53,13 +56,34 @@ public class FooServer {
 			DataInputStream inFromClient = new DataInputStream(socket.getInputStream());
 	    	DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
 	    	String command = inFromClient.readUTF();// read request
-	    	if(command.startsWith(ServerConstants.sendingFileCmd)){
-	    		File savedFile = saveRemoteFile(command, inFromClient);
-	    		sendResponse(savedFile, outToClient);
+	    	if(command.startsWith(ServerConstants.pushFileCmd)){
+	    		pushFileCmd(command, inFromClient, outToClient);
+	    	}
+	    	if (command.startsWith(ServerConstants.pullFileCmd)){
+	    		pullFileCmd(command, inFromClient, outToClient);
 	    	}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+    }
+    
+    public void pushFileCmd(String command, DataInputStream inFromClient, DataOutputStream outToClient) throws IOException{
+		File savedFile = saveRemoteFile(command, inFromClient);
+		String response = savedFile.getName() + "|" + new Long(savedFile.length()).toString();
+    	outToClient.writeUTF(response);  // send the response
+    }
+    
+    public void pullFileCmd(String command, DataInputStream inFromClient, DataOutputStream outToClient) throws IOException{
+    		String fileName = command.replace(ServerConstants.pullFileCmd + "|", "");  // command == requestingFile|foo.jpg
+    		File file = new File(ServerConstants.serverPullStuff + "/" + fileName);
+    		if (!file.exists()){
+    			System.out.println("Rut-ro... " + fileName + " doesn't exist.");
+    		}
+    		byte [] fileData = FileUtils.readFileToByteArray(file);
+    		outToClient.writeUTF(fileName + "|" + fileData.length);
+    		outToClient.write(fileData);
+    		outToClient.flush();
+    		System.out.println("pulled " + file.getName());
     }
     
     public File saveRemoteFile(String command, DataInputStream inFromClient) throws IOException{
@@ -69,24 +93,8 @@ public class FooServer {
     	}
     	String fileName = args[1];
     	Integer length = new Integer(args[2]);
-    	File fileToSave = new File(fileName);
-    	return saveFile(inFromClient, fileToSave, length);
+    	File fileToSave = new File(ServerConstants.servePushStuff + "/" + fileName);
+    	return FileService.saveFile(inFromClient, fileToSave, length);
     }
-    
-    public File saveFile(DataInputStream inFromClient, File fileToSave, Integer length) throws IOException{
-    	FileOutputStream fileOutputStream = new FileOutputStream(ServerConstants.servePushStuff + "/" + fileToSave);
-    	byte [] fileData = new byte[length];  // get the length to read from the client
-    	inFromClient.readFully(fileData);  // read the bytes into the array
-    	fileOutputStream.write(fileData);  // write the bytes to the file
-    	fileOutputStream.flush();
-    	fileOutputStream.close();
-		File savedFile = new File(ServerConstants.servePushStuff + "/" + fileToSave);
-		System.out.println(savedFile.getAbsolutePath());
-		return savedFile;
-    }
-    
-    public void sendResponse(File file, DataOutputStream outToClient) throws IOException{
-    	String response = file.getName() + "|" + new Long(file.length()).toString();
-    	outToClient.writeUTF(response);
-    }
+
  }

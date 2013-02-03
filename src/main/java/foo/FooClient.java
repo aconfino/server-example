@@ -16,10 +16,11 @@ public class FooClient {
 		DataInputStream inFromServer = new DataInputStream(socket.getInputStream());
 		DataOutputStream outToServer = new DataOutputStream(socket.getOutputStream());
 		String response = "";
-		if (arg.startsWith(ServerConstants.sendingFileCmd)){
+		if (arg.startsWith(ServerConstants.pushFileCmd)){
 			response = pushFile(arg, inFromServer, outToServer);
-		} else if (arg.startsWith(ServerConstants.requestingFileCmd)){
-			pullFile(arg, inFromServer, outToServer);
+		} else if (arg.startsWith(ServerConstants.pullFileCmd)){
+			File savedFile = pullFile(arg, inFromServer, outToServer);
+			response = savedFile.getName() + "|" + savedFile.length();
 		}
 		close(socket);
 		return response;
@@ -31,24 +32,23 @@ public class FooClient {
 			String length = args[2];
 			File file = new File(fileName);
 			byte [] fileData = FileUtils.readFileToByteArray(file);
-			String remoteCommand = ServerConstants.sendingFileCmd + "|" + file.getName() + "|" + length;
+			String remoteCommand = ServerConstants.pushFileCmd + "|" + file.getName() + "|" + length;
 			outToServer.writeUTF(remoteCommand);  // command == sendingFile-foo.jpg-6452
-			writeToOutputStream(fileData, outToServer); // writing data
+			outToServer.write(fileData);
+			outToServer.flush();
 			String response = inFromServer.readUTF();
 			return response;
 	}
 
-	protected static void pullFile(String command, DataInputStream inFromServer, DataOutputStream outToServer) {
-
-	}
-	
-	public static void writeToOutputStream(byte [] data, DataOutputStream outToServer) throws IOException{
-			outToServer.write(data);
-			outToServer.flush();
-	}
-	
-	protected static void readFromInputStream(DataInputStream inFromServer){
-		
+	protected static File pullFile(String command, DataInputStream inFromServer, DataOutputStream outToServer) throws IOException {
+		outToServer.writeUTF(command);  // command == requestingFile|foo.jpg
+		String response = inFromServer.readUTF();
+		String [] args = response.split("\\|");
+		String fileName = args[0];
+		Integer length = new Integer(args[1]);
+		File fileToSave = new File(fileName);
+		File savedFile = FileService.saveFile(inFromServer, fileToSave, length);
+		return savedFile;
 	}
 	
 	public static void close(Socket socket) throws IOException{

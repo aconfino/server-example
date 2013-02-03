@@ -6,12 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,10 +52,32 @@ public class FooClientTest  {
 			File file = new File(folder + fileName);
 			assertTrue(file.exists());
 			File savedFile = new File(ServerConstants.servePushStuff + "/" + fileName);
-			String response = FooClient.remoteCommand(ServerConstants.sendingFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
+			String response = FooClient.remoteCommand(ServerConstants.pushFileCmd + "|" + file.getAbsolutePath() + "|" + file.length());
 			assertTrue(response.equals(assertion));
 			assertTrue(savedFile.exists());
 		}
+	}
+	
+	@Test
+	public void pullFileTest() throws UnknownHostException, IOException{
+		for (int i = 0; i < loopCount; i++){
+			String randomKey = getRandomKey();
+			String fileName = randomKey;
+			String assertion = map.get(randomKey);
+			String response = FooClient.remoteCommand(ServerConstants.pullFileCmd + "|"+ fileName);
+			assertTrue(response.equals(assertion));
+			assertTrue(new File(fileName).exists());
+		}
+	}
+	
+	@After 
+	public void cleanup(){
+		for (String key : map.keySet()) {
+	        File file = new File(key);
+	        if (file.exists()){
+	        	file.delete();
+	        }
+	    }
 	}
 
 }
