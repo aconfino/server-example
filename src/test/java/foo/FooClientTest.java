@@ -13,11 +13,13 @@ import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Unit test for simple App.
  */
+@Ignore
 public class FooClientTest  {
 	
 	String folder = "src/test/resources/";
