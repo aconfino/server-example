@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+
+var metrics = [
+    { name: 'high cpu', url: 'www.high-cpu.com' }, 
+    { name: 'mean cpu', url: 'www.mean-cpu.com' },
+    { name: 'high heap', url: 'www.high-heap.com' },
+    { name: 'mean heap', url: 'www.mean-heap.com' }
+];
+
+$(document).ready(function(){
+	$.each(metrics, function(index, value) {
+		$('#container').append("<p>Name: " + value.name + ".  Url: " + value.url + "</p>");
+	});
+});
+
+</script>
+</head>
+<body>
+
+<div id="container">
+	<p>This is a paragraph</p>
+<div>
+
+</body>
+</html>
+
