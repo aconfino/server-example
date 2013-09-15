@@ -5,16 +5,18 @@
 </script>
 <script>
 
+var base_url = "www.some-url.com"
+
 var metrics = [
-    { name: 'high cpu', url: 'www.high-cpu.com' }, 
-    { name: 'mean cpu', url: 'www.mean-cpu.com' },
-    { name: 'high heap', url: 'www.high-heap.com' },
-    { name: 'mean heap', url: 'www.mean-heap.com' }
+    { name: 'high cpu', url: base_url + '/high-cpu' }, 
+    { name: 'mean cpu', url: base_url + '/mean-cpu' },
+    { name: 'high heap', url: base_url + '/high-heap' },
+    { name: 'mean heap', url: base_url + '/mean-heap' }
 ];
 
 $(document).ready(function(){
 	$.each(metrics, function(index, value) {
-		$('#container').append("<p>Name: " + value.name + ".  Url: " + value.url + "</p>");
+		$('#container').append("<p>" + value.name + " : " + value.url + "</p>");
 	});
 });
 
